@@ -1,24 +1,79 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { FC, useState, ChangeEvent } from "react";
+import TodoList from "./components/TodoList";
 
-function App() {
+export interface ITodos {
+  id:number
+  todo: string,
+  deadline: number
+}
+
+const App: FC = () => {
+
+
+
+  const [todo, setTodo] = useState<string>("")
+  const [deadline, setDeadline] = useState<number>(0)
+  const [todos, setTodos] = useState<ITodos[]>([])
+
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = event.target;
+
+
+    if (name === "todo") {
+      setTodo(value)
+    }
+    if (name === "deadline") {
+      if(Number(value)<0){
+        setDeadline(Number(0))
+
+      }
+      else{
+        setDeadline(Number(value))
+      }
+      
+      
+    }
+
+
+  }
+
+  const handleClick = (): void => {
+    setTodos([...todos, {
+
+      todo,
+      deadline,
+      id:Math.floor(Math.random()*10000)
+
+    }])
+    setTodo("")
+    setDeadline(0)
+  }
+
+  const deleteItem=(id:number):void=>{
+    const newItems=todos.filter((item:ITodos)=>item.id!==id)
+    setTodos(newItems)
+
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="input">
+        <input type="text" value={todo} placeholder="enter Todo" name="todo" onChange={handleChange} />
+        <input type="number" value={deadline} placeholder="enter deadline" name="deadline" onChange={handleChange} />
+        <button onClick={handleClick}>Add task</button>
+
+
+      </div>
+      <h1>List</h1>
+      {todos.map((todo:ITodos)=>{
+        
+      return <TodoList key={todo.id} todo={todo} deleteItem={deleteItem}/>
+          
+        
+         
+      })}
+
     </div>
   );
 }
